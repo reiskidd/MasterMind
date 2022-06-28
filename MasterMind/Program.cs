@@ -7,16 +7,37 @@ namespace MasterMind
     {
         private static void Main(string[] args)
         {
-            string[] Colors = new string[] { "Blau", "Grün", "Rot", "Lila", "Schwarz", "Organge" };
-            List<string> PlayerList = new List<string>();
+            bool run = true;
+            while (run)
+            {
+                string[] Colors = new string[] { "Blau", "Grün", "Rot", "Lila", "Schwarz", "Organge" };
 
-            List<string> ResultColors = Result(Colors);
-            PlayerEingabe(Colors, ResultColors);
+                List<string> ResultColors = Result(Colors);
+                bool Win = PlayGame(Colors, ResultColors);
+
+                if (Win)
+                {
+                    Console.WriteLine("Du hast gewonnen!\nZum beenden tippe: Stop\nZum weiter spielen: Play");
+                }
+                else
+                {
+                    Console.WriteLine("Du hast verloren!\nZum beenden tippe: Stop");
+                }
+                if (Console.ReadLine() == "Stop" || Console.ReadLine() == "stop")
+                {
+                    run = false;
+                }
+                else if (Console.ReadLine() == "Play" || Console.ReadLine() == "play")
+                {
+                    PlayGame(Colors, ResultColors);
+                }
+            }   
         }
 
         private static List<string> Result(string[] Colors)
         {
             List<string> ResultColors = new List<string>();
+
             Random rdm = new Random();
             for (int i = 0; i < 4; i++)
             {
@@ -33,7 +54,7 @@ namespace MasterMind
             return ResultColors;
         }
 
-        private static void PlayerEingabe(string[] Colors, List<string> ResultColors)
+        private static bool PlayGame(string[] Colors, List<string> ResultColors)
         {
             Console.WriteLine("Write four Colors\n");
             foreach (string i in Colors)
@@ -42,24 +63,50 @@ namespace MasterMind
             }
             Console.WriteLine("\n");
 
-            string SpielerEingabe = Console.ReadLine();
-            string[] colorsPlayerChoice = SpielerEingabe.Split(' ');
-            int WhitePoint = 0;
-
-            if (colorsPlayerChoice.Length == 4)
+            for (int i = 0; i < 10; i++)
             {
-                foreach (string i in colorsPlayerChoice)
+                string SpielerEingabe = Console.ReadLine();
+                string[] colorsPlayerChoice = SpielerEingabe.Split(' ');
+                int WhitePoint = 0;
+                int BlackPoint = 0;
+
+                if (colorsPlayerChoice.Length == 4)
                 {
-                    if (ResultColors.Contains(i))
+                    foreach (string k in colorsPlayerChoice)
                     {
-                        WhitePoint++;
+                        if (ResultColors.Contains(k))
+                        {
+                            WhitePoint++;
+                        }
                     }
                 }
+                else
+                {
+                    Console.WriteLine("Zu wenige Farben oder zu viel!");
+                }
+
+                for (int b = 0; b < 4; b++)
+                {
+                    if (ResultColors[b].Equals(colorsPlayerChoice[b]))
+                    {
+                        BlackPoint++;
+                        WhitePoint--;
+                    }
+                }
+                GameAusgabe(WhitePoint, BlackPoint);
+
+                if (BlackPoint == 4)
+                {
+                    return true;
+                }
             }
-            else
-            {
-                Console.WriteLine("Zu wenige Farben oder zu viel!");
-            }
+            return false;
+        }
+
+        private static void GameAusgabe(int WhitePoint, int BlackPoint)
+        {
+            Console.WriteLine(WhitePoint + " Weiße Punkte\n" + BlackPoint + " Schwarze Punkte\n");
+
             return;
         }
     }
